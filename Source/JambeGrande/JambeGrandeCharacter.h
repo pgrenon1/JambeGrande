@@ -57,6 +57,9 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category ="Input")
 	class UInputAction* MouseLookAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category ="Input")
+	UInputAction* StartGameAction;
 	
 public:
 	AJambeGrandeCharacter();
@@ -95,6 +98,7 @@ protected:
 	virtual void DoJumpEnd();
 
 protected:
+	void SetupGameInput(UInputComponent* playerInputComponent);
 	/** Set up input action bindings */
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	
@@ -104,5 +108,10 @@ public:
 
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+private:
+
+	UPROPERTY(Transient)
+	bool IsGameInputSetup;
 };
 

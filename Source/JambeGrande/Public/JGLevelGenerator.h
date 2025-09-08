@@ -18,16 +18,19 @@ struct FChunkData
 	UPROPERTY()
 	AJGChunk* ChunkActor;
 
+	UPROPERTY()
+	AJGChunk* MirrorChunkActor;
+
 	// The extents of the chunk actor
 	FVector ActorExtents;
 
 	FChunkData()
-		: ChunkActor(nullptr), ActorExtents(FVector::ZeroVector)
+		: ChunkActor(nullptr), MirrorChunkActor(nullptr), ActorExtents(FVector::ZeroVector)
 	{
 	}
 
-	FChunkData(AJGChunk* InChunkActor, const FVector& InActorExtents)
-		: ChunkActor(InChunkActor), ActorExtents(InActorExtents)
+	FChunkData(AJGChunk* chunkActor, AJGChunk* mirrorChunk, const FVector& actorExtents)
+		: ChunkActor(chunkActor), MirrorChunkActor(mirrorChunk) , ActorExtents(actorExtents)
 	{
 	}
 
@@ -35,24 +38,6 @@ struct FChunkData
     {
         return ChunkActor != nullptr;
     }
-};
-
-USTRUCT(BlueprintType)
-struct FPropSpawningParams
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Props")
-	float MinDistanceFromStairs;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Props")
-	float DistanceFromRightEdge;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Props")
-	float SpacingCheck;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Props")
-	FVector Offset;
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -69,6 +54,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level Generation")
 	TArray<TSubclassOf<AJGChunk>> ChunkClasses;
+
+	// Offset applied on Y axis when spawning the mirror chunk
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level Generation")
+	float MirrorYOffset;
 
 	// Actor class to spawn 200m in front of player spawn
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level Generation")

@@ -13,6 +13,7 @@ UJGLevelGenerator::UJGLevelGenerator()
 	PrimaryComponentTick.bCanEverTick = false;
 	FrontActor = nullptr;
 	BackActor = nullptr;
+	MirrorYOffset = 500.0f;
 }
 
 void UJGLevelGenerator::BeginPlay()
@@ -70,26 +71,37 @@ void UJGLevelGenerator::SpawnChunk(bool forward)
 
 	newChunk->SetIndex(logicalIndex);
 	newChunk->FinishSpawning(FTransform(newLocation));
-	
-	if (!newChunk)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn new chunk!"));
-		return;
-	}
-		
-	if (forward)
-		ActiveChunks.Add(FChunkData(newChunk, extent));
-	else
-		ActiveChunks.Insert(FChunkData(newChunk, extent), 0);
 
+	// Recalculate bounds after spawning to ensure accurate extents
+	newChunk->GetActorBounds(true, location, extent, true);
+
+	// Spawn the mirror chunk: rotate 180 degrees about Z and offset on Y
+	FRotator mirrorRotation(0.0f, 180.0f, 0.0f);
+	FVector mirrorLocation = newLocation + FVector(extent.X * 2, MirrorYOffset, 0.0f);
+	FTransform mirrorTransform(mirrorRotation, mirrorLocation);
+
+	AJGChunk* mirrorChunk = GetWorld()->SpawnActorDeferred<AJGChunk>(chunkClass, mirrorTransform);
+	if (IsValid(mirrorChunk))
+	{
+		mirrorChunk->SetIndex(logicalIndex);
+		mirrorChunk->FinishSpawning(mirrorTransform);
+		mirrorChunk->SetActorLabel(newChunk->GetActorLabel() + TEXT("_Mirror"));
+	}
+
+	if (forward)
+		ActiveChunks.Add(FChunkData(newChunk, mirrorChunk, extent));
+	else
+		ActiveChunks.Insert(FChunkData(newChunk, mirrorChunk, extent), 0);
 }
 
 void UJGLevelGenerator::DespawnExtremityChunk(bool forward)
 {
 	FChunkData chunkData = GetExtremityChunkData(forward);
 	AJGChunk* chunkToRemove = chunkData.ChunkActor;
+	AJGChunk* mirrorChunkToRemove = chunkData.MirrorChunkActor;
 	
 	chunkToRemove->Destroy();
+	mirrorChunkToRemove->Destroy();
 
 	int32 indexToRemove = forward ? ActiveChunks.Num() - 1 : 0;
 	ActiveChunks.RemoveAt(indexToRemove);

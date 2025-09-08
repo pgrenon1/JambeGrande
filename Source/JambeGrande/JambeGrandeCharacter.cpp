@@ -32,7 +32,7 @@ AJambeGrandeCharacter::AJambeGrandeCharacter()
 
 	// Create the Camera Component	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("First Person Camera"));
-	FirstPersonCameraComponent->SetupAttachment(FirstPersonMesh, FName("head"));
+	FirstPersonCameraComponent->SetupAttachment(FirstPersonMesh);
 	FirstPersonCameraComponent->SetRelativeLocationAndRotation(FVector(-2.8f, 5.89f, 0.0f), FRotator(0.0f, 90.0f, -90.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 	FirstPersonCameraComponent->bEnableFirstPersonFieldOfView = true;
@@ -81,6 +81,7 @@ void AJambeGrandeCharacter::BeginPlay()
 	{
 		UE_LOG(LogTemplateCharacter, Warning, TEXT("No valid GameMode found!"));
 	}
+
 }
 
 void AJambeGrandeCharacter::OnChunkOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
@@ -104,16 +105,7 @@ void AJambeGrandeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AJambeGrandeCharacter::DoJumpStart);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AJambeGrandeCharacter::DoJumpEnd);
-
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::MoveInput);
-
-		// Looking/Aiming
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::LookInput);
-		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::LookInput);
+		EnhancedInputComponent->BindAction(StartGameAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::SetupGameInput, PlayerInputComponent);
 	}
 	else
 	{
@@ -144,8 +136,8 @@ void AJambeGrandeCharacter::DoAim(float Yaw, float Pitch)
 	if (GetController())
 	{
 		// pass the rotation inputs
-		AddControllerYawInput(Yaw);
-		AddControllerPitchInput(Pitch);
+		AddControllerYawInput(Yaw * 0.25f);
+		AddControllerPitchInput(Pitch * 0.25f);
 	}
 }
 
@@ -169,4 +161,32 @@ void AJambeGrandeCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AJambeGrandeCharacter::SetupGameInput(UInputComponent* playerInputComponent)
+{
+	if (IsGameInputSetup)
+	{
+		return;
+	}
+	
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(playerInputComponent))
+	{
+		// Jumping
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AJambeGrandeCharacter::DoJumpStart);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AJambeGrandeCharacter::DoJumpEnd);
+
+		// Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::MoveInput);
+
+		// Looking/Aiming
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::LookInput);
+		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::LookInput);
+
+		IsGameInputSetup = true;
+	}
+	else
+	{
+		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
 }
