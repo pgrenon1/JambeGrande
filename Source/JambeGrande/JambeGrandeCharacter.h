@@ -17,6 +17,8 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameInputSetup);
+
 /**
  *  A basic first person character
  */
@@ -109,6 +111,9 @@ public:
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	UPROPERTY(BlueprintAssignable)
+	FOnGameInputSetup OnGameInputSetup;
+	
 private:
 
 	UPROPERTY(Transient)

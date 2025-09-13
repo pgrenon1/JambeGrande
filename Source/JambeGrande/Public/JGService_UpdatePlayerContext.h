@@ -12,6 +12,7 @@ class JAMBEGRANDE_API UJGService_UpdatePlayerContext : public UBTService
 
 public:
 	UJGService_UpdatePlayerContext();
+	void UpdatePlayerContext(UBehaviorTreeComponent& ownerComp);
 
 protected:
 	// Direction along which the NPC is moving (world-space). Used to project player/NPC delta.
@@ -27,4 +28,6 @@ protected:
 	FBlackboardKeySelector PlayerFacingDotKey;
 
 	virtual void TickNode(UBehaviorTreeComponent& ownerComp, uint8* nodeMemory, float deltaSeconds) override;
+
+	virtual void OnSearchStart(FBehaviorTreeSearchData& searchData) override;
 };

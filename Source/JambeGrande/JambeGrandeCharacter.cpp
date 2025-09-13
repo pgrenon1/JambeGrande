@@ -183,6 +183,8 @@ void AJambeGrandeCharacter::SetupGameInput(UInputComponent* playerInputComponent
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::LookInput);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::LookInput);
 
+		OnGameInputSetup.Broadcast();
+
 		IsGameInputSetup = true;
 	}
 	else

@@ -11,10 +11,8 @@ UJGService_UpdatePlayerContext::UJGService_UpdatePlayerContext()
 	bNotifyCeaseRelevant = false;
 }
 
-void UJGService_UpdatePlayerContext::TickNode(UBehaviorTreeComponent& ownerComp, uint8* nodeMemory, float deltaSeconds)
+void UJGService_UpdatePlayerContext::UpdatePlayerContext(UBehaviorTreeComponent& ownerComp)
 {
-	Super::TickNode(ownerComp, nodeMemory, deltaSeconds);
-
 	UBlackboardComponent* bb = ownerComp.GetBlackboardComponent();
 	if (!IsValid(bb))
 	{
@@ -24,7 +22,7 @@ void UJGService_UpdatePlayerContext::TickNode(UBehaviorTreeComponent& ownerComp,
 	AAIController* ai = ownerComp.GetAIOwner();
 	APawn* npc = ai ? ai->GetPawn() : nullptr;
 	APawn* player = ownerComp.GetWorld() && ownerComp.GetWorld()->GetFirstPlayerController()
-		? ownerComp.GetWorld()->GetFirstPlayerController()->GetPawn() : nullptr;
+		                ? ownerComp.GetWorld()->GetFirstPlayerController()->GetPawn() : nullptr;
 
 	if (!IsValid(npc) || !IsValid(player))
 	{
@@ -56,4 +54,18 @@ void UJGService_UpdatePlayerContext::TickNode(UBehaviorTreeComponent& ownerComp,
 	FVector2D normForward2D = playerForward2D.GetSafeNormal();
 	const float facingDot = FVector2D::DotProduct(normForward2D, normMoveDir2D);
 	bb->SetValueAsFloat(PlayerFacingDotKey.SelectedKeyName, facingDot);
+}
+
+void UJGService_UpdatePlayerContext::TickNode(UBehaviorTreeComponent& ownerComp, uint8* nodeMemory, float deltaSeconds)
+{
+	Super::TickNode(ownerComp, nodeMemory, deltaSeconds);
+
+	UpdatePlayerContext(ownerComp);
+}
+
+void UJGService_UpdatePlayerContext::OnSearchStart(FBehaviorTreeSearchData& searchData)
+{
+	Super::OnSearchStart(searchData);
+
+	UpdatePlayerContext(searchData.OwnerComp);
 }

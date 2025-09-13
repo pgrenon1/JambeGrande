@@ -6,7 +6,6 @@
 UJGTaskNode_TeleportAhead::UJGTaskNode_TeleportAhead()
 {
 	NodeName = "Teleport Ahead";
-	LaneY = 0.0f;
 	AheadDistance = 100.0f;
 	ProjectToNavMesh = true;
 	MaxSearchRadius = 300.0f;
@@ -45,11 +44,11 @@ EBTNodeResult::Type UJGTaskNode_TeleportAhead::ExecuteTask(UBehaviorTreeComponen
 	FVector2D moveDir2D(moveDir.X, moveDir.Y);
 	moveDir2D.Normalize();
 
-	// Compute target ahead of player at fixed distance, clamp Y to lane
+	// Compute target ahead of player at fixed distance, clamp Y to player's Y
 	FVector playerLoc = player->GetActorLocation();
 	FVector2D player2D(playerLoc.X, playerLoc.Y);
 	FVector2D target2D = player2D + moveDir2D * AheadDistance;
-	target2D.Y = LaneY;
+	target2D.Y = player2D.Y;
 
 	FVector target3D(target2D.X, target2D.Y, 0.0f);
 
@@ -83,9 +82,8 @@ EBTNodeResult::Type UJGTaskNode_TeleportAhead::ExecuteTask(UBehaviorTreeComponen
 
 FString UJGTaskNode_TeleportAhead::GetStaticDescription() const
 {
-	return FString::Printf(TEXT("Teleport Ahead\nDirection Key: %s\nLaneY: %.1f\nAhead Distance: %.1f\nProject To NavMesh: %s\nMax Search Radius: %.1f"),
+	return FString::Printf(TEXT("Teleport Ahead\nDirection Key: %s\nY Source: Player\nAhead Distance: %.1f\nProject To NavMesh: %s\nMax Search Radius: %.1f"),
 		*DirectionKey.SelectedKeyName.ToString(),
-		LaneY,
 		AheadDistance,
 		ProjectToNavMesh ? TEXT("true") : TEXT("false"),
 		MaxSearchRadius);

@@ -21,10 +21,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard")
 	FBlackboardKeySelector DirectionKey;
 
-	// Desired lane Y coordinate to clamp to when teleporting
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Teleport")
-	float LaneY;
-
 	// Distance ahead of the player to place the NPC when teleporting
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Teleport", meta = (ClampMin = "0.0"))
 	float AheadDistance;
