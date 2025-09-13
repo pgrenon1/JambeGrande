@@ -122,6 +122,16 @@ void AJambeGrandeCharacter::MoveInput(const FInputActionValue& Value)
 	DoMove(MovementVector.X, MovementVector.Y);
 }
 
+void AJambeGrandeCharacter::WalkForward()
+{
+	DoMove(0.0f, 1.0f);
+}
+
+void AJambeGrandeCharacter::WalkBackward()
+{
+	DoMove(0.0f, -1.0f);
+}
+
 void AJambeGrandeCharacter::LookInput(const FInputActionValue& Value)
 {
 	// get the Vector2D look axis
@@ -178,6 +188,8 @@ void AJambeGrandeCharacter::SetupGameInput(UInputComponent* playerInputComponent
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::MoveInput);
+		EnhancedInputComponent->BindAction(WalkForwardAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::WalkForward);
+		EnhancedInputComponent->BindAction(WalkBackwardAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::WalkBackward);
 
 		// Looking/Aiming
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJambeGrandeCharacter::LookInput);

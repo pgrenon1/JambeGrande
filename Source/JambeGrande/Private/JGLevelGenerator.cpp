@@ -85,7 +85,9 @@ void UJGLevelGenerator::SpawnChunk(bool forward)
 	{
 		mirrorChunk->SetIndex(logicalIndex);
 		mirrorChunk->FinishSpawning(mirrorTransform);
+#if WITH_EDITOR
 		mirrorChunk->SetActorLabel(newChunk->GetActorLabel() + TEXT("_Mirror"));
+#endif
 	}
 
 	if (forward)

@@ -62,6 +62,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category ="Input")
 	UInputAction* StartGameAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category ="Input")
+	UInputAction* WalkForwardAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category ="Input")
+	UInputAction* WalkBackwardAction;
 	
 public:
 	AJambeGrandeCharacter();
@@ -79,6 +85,10 @@ public:
 protected:
 	/** Called from Input Actions for movement input */
 	void MoveInput(const FInputActionValue& Value);
+
+	void WalkForward();
+
+	void WalkBackward();
 
 	/** Called from Input Actions for looking input */
 	void LookInput(const FInputActionValue& Value);

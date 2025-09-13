@@ -11,7 +11,7 @@ class AJGChunk;
  * 
  */
 UCLASS()
-class JAMBEGRANDE_API UJGChunkTool : public UAssetActionUtility
+class JAMBEGRANDEEDITOR_API UJGChunkTool : public UAssetActionUtility
 {
 	GENERATED_BODY()
 

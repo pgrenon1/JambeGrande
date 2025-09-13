@@ -5,7 +5,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Engine/World.h"
-#include "Editor.h"
 #include "AssetRegistry/AssetData.h"
 
 // Sets default values
@@ -62,6 +61,7 @@ void AJGChunk::GetBuildingBounds(FVector& location, FVector& extent) const
 	{
 		// We're likely being called from an asset action utility (CDO context)
 		// Try to get the editor world
+#if WITH_EDITOR
 		if (GEditor && GEditor->GetEditorWorldContext().World())
 		{
 			world = GEditor->GetEditorWorldContext().World();
@@ -72,6 +72,7 @@ void AJGChunk::GetBuildingBounds(FVector& location, FVector& extent) const
 			UE_LOG(LogTemp, Warning, TEXT("Could not get valid world context for bounds calculation"));
 			return;
 		}
+#endif
 	}
 
 	// Spawn the actor temporarily at origin
